@@ -1,0 +1,31 @@
+SprintBoard Component Hierarchy
+
+SprintBoard
+│
+├── Navbar
+│   ├── Logo
+│   ├── Navigation Links
+│   └── Add Task Button
+│
+├── Dashboard
+│   ├── Dashboard Heading
+│   ├── Statistics Cards
+│   │   ├── Total Tasks
+│   │   ├── To Do Count
+│   │   ├── In Progress Count
+│   │   └── Done Count
+│   │
+│   ├── Search and Filters
+│   │   ├── Search Input
+│   │   ├── Priority Filter
+│   │   └── Reset Button
+│   │
+│   └── Kanban Board
+│       ├── To Do Column
+│       │   └── Task Cards
+│       ├── In Progress Column
+│       │   └── Task Cards
+│       └── Done Column
+│           └── Task Cards
+│
+└── Footer
