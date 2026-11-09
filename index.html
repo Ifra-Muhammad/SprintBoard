@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SprintBoard - Project Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!--  main page  -->
+    <div class="app-container">
+
+        <!-- Navbar -->
+        <header class="navbar">
+            <div class="logo">
+                <h2>SprintBoard</h2>
+            </div>
+
+            <nav class="nav-links">
+                <a href="#dashboard">Dashboard</a>
+                <a href="#board">My Board</a>
+            </nav>
+
+            <button class="add-task-btn" id="addTaskBtn">
+                + Add Task
+            </button>
+        </header>
+
+        <!-- Dashboard heading -->
+        <main id="dashboard">
+
+            <section class="dashboard-header">
+                <div>
+                    <h1>Project Dashboard</h1>
+                    <p>Manage your tasks and track your progress.</p>
+                </div>
+
+                <div class="date-display">
+                    <span>November 2026</span>
+                </div>
+            </section>
+
+            <!-- Statistics -->
+            <section class="stats-container">
+
+                <div class="stat-card">
+                    <h3>Total Tasks</h3>
+                    <p id="totalTasks">0</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>To Do</h3>
+                    <p id="todoCount">0</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>In Progress</h3>
+                    <p id="progressCount">0</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Completed</h3>
+                    <p id="doneCount">0</p>
+                </div>
+
+            </section>
+
+            <!-- Search aur filter -->
+            <section class="board-controls">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search tasks..."
+                >
+
+                <select id="priorityFilter">
+                    <option value="all">All Priorities</option>
+                    <option value="high">High Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="low">Low Priority</option>
+                </select>
+
+                <button id="resetFilters">
+                    Reset Filters
+                </button>
+
+            </section>
+
+            <!-- Kanban board -->
+            <section class="kanban-board" id="board">
+
+                <!-- To Do column -->
+                <div class="board-column" id="todoColumn">
+
+                    <div class="column-header">
+                        <h2>To Do</h2>
+                        <span id="todoBadge">0</span>
+                    </div>
+
+                    <div class="task-list" id="todoList">
+                    </div>
+
+                </div>
+
+                <!-- In Progress column -->
+                <div class="board-column" id="progressColumn">
+
+                    <div class="column-header">
+                        <h2>In Progress</h2>
+                        <span id="progressBadge">0</span>
+                    </div>
+
+                    <div class="task-list" id="progressList">
+                    </div>
+
+                </div>
+
+                <!-- Done column -->
+                <div class="board-column" id="doneColumn">
+
+                    <div class="column-header">
+                        <h2>Done</h2>
+                        <span id="doneBadge">0</span>
+                    </div>
+
+                    <div class="task-list" id="doneList">
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2026 SprintBoard. Built with HTML, CSS & JavaScript.</p>
+        </footer>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
