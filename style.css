@@ -656,3 +656,57 @@ button {
         padding: 10px 15px;
     }
 }
+
+
+/*  Drag and Drop & Accessible Movement */
+
+.task-card[draggable="true"] {
+    cursor: grab;
+}
+
+.task-card.dragging {
+    opacity: 0.4;
+    cursor: grabbing;
+    border: 1px dashed var(--primary);
+}
+
+.board-column.drag-over {
+    border: 2px dashed var(--primary);
+    background: #30252A;
+    transition: 0.2s ease;
+}
+
+/* Accessible move dropdown */
+
+.move-label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 12px;
+    color: var(--text-light);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.move-task-select {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #1B1B1F;
+    color: var(--text);
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+}
+
+.move-task-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(251, 113, 133, 0.13);
+}
+
+.move-task-select option {
+    background: var(--surface);
+    color: var(--text);
+}
+
