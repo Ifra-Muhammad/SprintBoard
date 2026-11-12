@@ -1,6 +1,6 @@
 
 // Sample tasks
-let tasks = [
+const sampleTasks = [
     { id: 1, title: "Design Homepage", description: "Create a clean and modern homepage layout.", priority: "high", dueDate: "2026-11-10", status: "todo" },
     { id: 2, title: "Create Login Page", description: "Design a simple and user-friendly login page.", priority: "medium", dueDate: "2026-11-11", status: "todo" },
     { id: 3, title: "Research Project Ideas", description: "Explore ideas and finalize the project concept.", priority: "low", dueDate: "2026-11-12", status: "todo" },
@@ -11,6 +11,40 @@ let tasks = [
     { id: 8, title: "Choose Color Theme", description: "Select a consistent and professional color palette.", priority: "medium", dueDate: "2026-11-09", status: "done" },
     { id: 9, title: "Create Wireframe", description: "Prepare the basic dashboard wireframe.", priority: "high", dueDate: "2026-11-09", status: "done" }
 ];
+
+
+// LocalStorage persistence
+const STORAGE_KEY = "sprintBoardTasks";
+
+function loadTasks() {
+    try {
+        const savedTasks = localStorage.getItem(STORAGE_KEY);
+
+        if (savedTasks !== null) {
+            const parsedTasks = JSON.parse(savedTasks);
+
+            if (Array.isArray(parsedTasks)) {
+                return parsedTasks;
+            }
+        }
+    } catch (error) {
+        console.error("Unable to load saved tasks:", error);
+    }
+
+    return [...sampleTasks];
+}
+
+function saveTasks() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    } catch (error) {
+        console.error("Unable to save tasks:", error);
+    }
+}
+
+// Load saved tasks instead of always starting with sample tasks
+let tasks = loadTasks();
+
 
 // HTML elements
 const todoList = document.getElementById("todoList");
@@ -33,6 +67,12 @@ const taskDueDate = document.getElementById("taskDueDate");
 const taskStatus = document.getElementById("taskStatus");
 
 const titleError = document.getElementById("titleError");
+
+// Search and filter elements
+const searchInput = document.getElementById("searchInput");
+const priorityFilter = document.getElementById("priorityFilter");
+const resetFilters = document.getElementById("resetFilters");
+
 
 // Column status mapping
 const columnStatuses = {
@@ -103,6 +143,9 @@ function moveTask(id, newStatus) {
     if (!task || !columnStatuses[newStatus]) return;
 
     task.status = newStatus;
+
+    // Save status changes
+    saveTasks();
 
     renderTasks();
 }
@@ -219,13 +262,35 @@ function createTaskCard(task) {
 }
 
 
+//  Search and priority filtering
+function getFilteredTasks() {
+    const searchText = searchInput.value.trim().toLowerCase();
+    const selectedPriority = priorityFilter.value;
+
+    return tasks.filter(function(task) {
+        const matchesSearch =
+            task.title.toLowerCase().includes(searchText) ||
+            (task.description || "").toLowerCase().includes(searchText);
+
+        const matchesPriority =
+            selectedPriority === "all" ||
+            task.priority === selectedPriority;
+
+        return matchesSearch && matchesPriority;
+    });
+}
+
+
 // Render tasks
 function renderTasks() {
     todoList.innerHTML = "";
     progressList.innerHTML = "";
     doneList.innerHTML = "";
 
-    tasks.forEach(function(task) {
+    //  Render filtered tasks without changing original tasks
+    const visibleTasks = getFilteredTasks();
+
+    visibleTasks.forEach(function(task) {
         const card = createTaskCard(task);
         const targetList = columnStatuses[task.status];
 
@@ -300,6 +365,26 @@ function updateStatistics() {
     document.getElementById("todoBadge").textContent = todoTasks;
     document.getElementById("progressBadge").textContent = progressTasks;
     document.getElementById("doneBadge").textContent = doneTasks;
+
+    //  Completion percentage
+    const completionRate = totalTasks === 0
+        ? 0
+        : Math.round((doneTasks / totalTasks) * 100);
+
+    let completionElement = document.getElementById("completionRate");
+
+    if (!completionElement) {
+        completionElement = document.createElement("small");
+        completionElement.id = "completionRate";
+        completionElement.classList.add("completion-rate");
+
+        document.getElementById("doneCount").insertAdjacentElement(
+            "afterend",
+            completionElement
+        );
+    }
+
+    completionElement.textContent = completionRate + "% completed";
 }
 
 
@@ -351,6 +436,9 @@ taskForm.addEventListener("submit", function(event) {
         tasks.push(newTask);
     }
 
+    // Save new and edited tasks
+    saveTasks();
+
     renderTasks();
     closeModal();
 });
@@ -393,8 +481,26 @@ function deleteTask(id) {
         return task.id !== id;
     });
 
+    // Thursday: Save after deleting a task
+    saveTasks();
+
     renderTasks();
 }
+
+
+//  Search input event
+searchInput.addEventListener("input", renderTasks);
+
+// Priority filter event
+priorityFilter.addEventListener("change", renderTasks);
+
+//  Reset search and filters
+resetFilters.addEventListener("click", function() {
+    searchInput.value = "";
+    priorityFilter.value = "all";
+
+    renderTasks();
+});
 
 
 // Initial render
