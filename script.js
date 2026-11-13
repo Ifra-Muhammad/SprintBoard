@@ -42,7 +42,7 @@ function saveTasks() {
     }
 }
 
-// Load saved tasks instead of always starting with sample tasks
+// Load saved tasks
 let tasks = loadTasks();
 
 
@@ -68,6 +68,11 @@ const taskStatus = document.getElementById("taskStatus");
 
 const titleError = document.getElementById("titleError");
 
+// Modal accessibility
+const modalContent = taskModal.querySelector(".modal-content");
+let lastFocusedElement = null;
+
+
 // Search and filter elements
 const searchInput = document.getElementById("searchInput");
 const priorityFilter = document.getElementById("priorityFilter");
@@ -91,12 +96,9 @@ const statusNames = {
 let draggedTaskId = null;
 
 
-// Modal open
-function openModal() {
-    taskForm.reset();
-    taskId.value = "";
-    titleError.textContent = "";
-    modalTitle.textContent = "Add New Task";
+// Show modal
+function showModal() {
+    lastFocusedElement = document.activeElement;
 
     taskModal.classList.add("show");
     taskModal.setAttribute("aria-hidden", "false");
@@ -105,14 +107,36 @@ function openModal() {
 }
 
 
+// Modal open
+function openModal() {
+    taskForm.reset();
+    taskId.value = "";
+    titleError.textContent = "";
+    modalTitle.textContent = "Add New Task";
+
+    showModal();
+}
+
+
 // Modal close
 function closeModal() {
+    if (!taskModal.classList.contains("show")) return;
+
     taskModal.classList.remove("show");
     taskModal.setAttribute("aria-hidden", "true");
 
     taskForm.reset();
     taskId.value = "";
     titleError.textContent = "";
+
+    // Return focus to the element that opened the modal
+    if (lastFocusedElement && lastFocusedElement.isConnected) {
+        lastFocusedElement.focus();
+    } else {
+        addTaskBtn.focus();
+    }
+
+    lastFocusedElement = null;
 }
 
 
@@ -127,9 +151,42 @@ taskModal.addEventListener("click", function(event) {
     }
 });
 
+
+// Keyboard accessibility: Escape and focus trap
 document.addEventListener("keydown", function(event) {
-    if (event.key === "Escape" && taskModal.classList.contains("show")) {
+    if (!taskModal.classList.contains("show")) return;
+
+    // Close modal with Escape
+    if (event.key === "Escape") {
         closeModal();
+        return;
+    }
+
+    // Keep keyboard focus inside the modal
+    if (event.key === "Tab") {
+        const focusableElements = modalContent.querySelectorAll(
+            'button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+        );
+
+        const visibleElements = Array.from(focusableElements).filter(function(element) {
+            return element.getClientRects().length > 0;
+        });
+
+        if (visibleElements.length === 0) {
+            event.preventDefault();
+            return;
+        }
+
+        const firstElement = visibleElements[0];
+        const lastElement = visibleElements[visibleElements.length - 1];
+
+        if (event.shiftKey && document.activeElement === firstElement) {
+            event.preventDefault();
+            lastElement.focus();
+        } else if (!event.shiftKey && document.activeElement === lastElement) {
+            event.preventDefault();
+            firstElement.focus();
+        }
     }
 });
 
@@ -144,9 +201,7 @@ function moveTask(id, newStatus) {
 
     task.status = newStatus;
 
-    // Save status changes
     saveTasks();
-
     renderTasks();
 }
 
@@ -203,7 +258,10 @@ function createTaskCard(task) {
 
     const statusSelect = document.createElement("select");
     statusSelect.classList.add("move-task-select");
-    statusSelect.setAttribute("aria-label", "Move " + task.title + " to another column");
+    statusSelect.setAttribute(
+        "aria-label",
+        "Move " + task.title + " to another column"
+    );
 
     Object.keys(statusNames).forEach(function(statusKey) {
         const option = document.createElement("option");
@@ -262,7 +320,7 @@ function createTaskCard(task) {
 }
 
 
-//  Search and priority filtering
+// Search and priority filtering
 function getFilteredTasks() {
     const searchText = searchInput.value.trim().toLowerCase();
     const selectedPriority = priorityFilter.value;
@@ -287,7 +345,6 @@ function renderTasks() {
     progressList.innerHTML = "";
     doneList.innerHTML = "";
 
-    //  Render filtered tasks without changing original tasks
     const visibleTasks = getFilteredTasks();
 
     visibleTasks.forEach(function(task) {
@@ -366,7 +423,7 @@ function updateStatistics() {
     document.getElementById("progressBadge").textContent = progressTasks;
     document.getElementById("doneBadge").textContent = doneTasks;
 
-    //  Completion percentage
+    // Completion percentage
     const completionRate = totalTasks === 0
         ? 0
         : Math.round((doneTasks / totalTasks) * 100);
@@ -436,7 +493,6 @@ taskForm.addEventListener("submit", function(event) {
         tasks.push(newTask);
     }
 
-    // Save new and edited tasks
     saveTasks();
 
     renderTasks();
@@ -462,10 +518,7 @@ function editTask(id) {
     titleError.textContent = "";
     modalTitle.textContent = "Edit Task";
 
-    taskModal.classList.add("show");
-    taskModal.setAttribute("aria-hidden", "false");
-
-    taskTitle.focus();
+    showModal();
 }
 
 
@@ -481,20 +534,18 @@ function deleteTask(id) {
         return task.id !== id;
     });
 
-    // Thursday: Save after deleting a task
     saveTasks();
-
     renderTasks();
 }
 
 
-//  Search input event
+// Search input event
 searchInput.addEventListener("input", renderTasks);
 
 // Priority filter event
 priorityFilter.addEventListener("change", renderTasks);
 
-//  Reset search and filters
+// Reset search and filters
 resetFilters.addEventListener("click", function() {
     searchInput.value = "";
     priorityFilter.value = "all";
