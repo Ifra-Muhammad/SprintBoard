@@ -18,12 +18,12 @@
                 <h2>SprintBoard</h2>
             </div>
 
-            <nav class="nav-links">
+            <nav class="nav-links" aria-label="Main navigation">
                 <a href="#dashboard">Dashboard</a>
                 <a href="#board">My Board</a>
             </nav>
 
-            <button class="add-task-btn" id="addTaskBtn">
+            <button type="button" class="add-task-btn" id="addTaskBtn">
                 + Add Task
             </button>
         </header>
@@ -74,23 +74,31 @@
                     type="text"
                     id="searchInput"
                     placeholder="Search tasks..."
+                    aria-label="Search tasks by title or description"
                 >
 
-                <select id="priorityFilter">
+                <select
+                    id="priorityFilter"
+                    aria-label="Filter tasks by priority"
+                >
                     <option value="all">All Priorities</option>
                     <option value="high">High Priority</option>
                     <option value="medium">Medium Priority</option>
                     <option value="low">Low Priority</option>
                 </select>
 
-                <button id="resetFilters">
+                <button type="button" id="resetFilters">
                     Reset Filters
                 </button>
 
             </section>
 
             <!-- Kanban board -->
-            <section class="kanban-board" id="board">
+            <section
+                class="kanban-board"
+                id="board"
+                aria-label="Task board"
+            >
 
                 <!-- To Do -->
                 <div class="board-column" id="todoColumn">
@@ -129,14 +137,22 @@
         <!-- Add/Edit Task Modal -->
         <div class="modal" id="taskModal" aria-hidden="true">
 
-            <div class="modal-content" role="dialog"
-                 aria-modal="true" aria-labelledby="modalTitle">
+            <div
+                class="modal-content"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="modalTitle"
+            >
 
                 <div class="modal-header">
                     <h2 id="modalTitle">Add New Task</h2>
 
-                    <button type="button" class="close-modal"
-                            id="closeModalBtn" aria-label="Close">
+                    <button
+                        type="button"
+                        class="close-modal"
+                        id="closeModalBtn"
+                        aria-label="Close"
+                    >
                         &times;
                     </button>
                 </div>
